@@ -19,10 +19,7 @@ console.log( 'Стоимость верстки экранов ' + fullPrice + '
 
 //Привести строку screens к нижнему регистру и разбить строку на массив, вывести массив в консоль
 screens = screens.toLowerCase();
-screens = screens.split(' ');
-for (let i = 0; i < screens.length; i++) {
-    screens[i] = screens[i].replace(',', '')
-}
+screens = screens.split(', ');
 console.log(screens);
 
 //Вывести в консоль Процент отката посреднику за работу (fullPrice * (rollback/100))
