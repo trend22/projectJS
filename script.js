@@ -1,68 +1,104 @@
-//Спрашиваем у пользователя “Как называется ваш проект?” и результат сохраняем в переменную title
+'use strict'
+//---------------------блок объявления переменных------------------------------
 let title = prompt('Как называется Ваш проект?');
-//Спросить у пользователя “Какие типы экранов нужно разработать?” сохранить в переменную screens (пример: "Простые, Сложные, Интерактивные")
 let screens = prompt('Какие типы экранов нужно разработать?');
-//Спросить у пользователя “Сколько будет стоить данная работа?” и сохранить в переменную screenPrice (пример: 12000)
 let screenPrice = +prompt('Сколько будет стоить данная работа?');
-//Вывести в консоль длину строки из переменной screens
-console.log( screens.length);
-//Привести строку screens к нижнему регистру и разбить строку на массив, вывести массив в консоль
-screens = screens.toLowerCase().split(', ');
-console.log(screens);
-//Спросить у пользователя “Нужен ли адаптив на сайте?” и сохранить данные в переменной adaptive (булево значение true/false)
 let adaptive = confirm('Нужен ли адаптив на сайте?');
-//Спросить у пользователя по 2 раза каждый вопрос и записать ответы в разные переменные 
-//1. “Какой дополнительный тип услуги нужен?” (например service1, service2) 
-//2. “Сколько это будет стоить?” (например servicePrice1, servicePrice2) 
-//в итоге 4 вопроса и 4 разные переменных, 
-//вопросы задаются в такой последовательности Название - Стоимость - Название - Стоимость
 let service1 = prompt('Какой дополнительный тип услуги №1 нужен?');
 let servicePrice1 = +prompt('Сколько это будет стоить?');
 let service2 = prompt('Какой дополнительный тип услуги №2 нужен?');
 let servicePrice2 = +prompt('Сколько это будет стоить?');
 
+//объявляем переменную для суммы всех дополнительных услуг
+let allServicePrices = 0;
+
+let fullPrice = 0;
+let servicePercentPrice = 0;
+
 const rollback = 20;
-//Вычислить итоговую стоимость работы учитывая стоимость верстки экранов 
-//и дополнительных услуг (screenPrice + servicePrice1 + servicePrice2) 
-//и результат занести в переменную fullPrice
-let fullPrice = screenPrice + servicePrice1 + servicePrice2;
 
-//Вывести в консоль тип данных значений переменных title, fullPrice, adaptive;
-console.log( typeof( title ));
-console.log( typeof( fullPrice ));
-console.log( typeof( adaptive ));
+//---------------------------блок описания функций----------------------
 
-//Объявить переменную servicePercentPrice и занести в нее итоговую стоимость
-// за вычетом отката посреднику (servicePercentPrice = fullPrice - Откат посреднику), 
-//округлив результат в большую сторону (методы объекта Math в помощь). 
-//Вывести servicePercentPrice в консоль.
-let servicePercentPrice = Math.ceil(fullPrice - (fullPrice * (rollback/100)));
-console.log(servicePercentPrice);
-
-//Вывести в консоль “Стоимость верстки экранов (screenPrice) рублей/ долларов/гривен/юани” и “Стоимость разработки сайта (fullPrice) рублей/ долларов/гривен/юани”
-console.log( 'Стоимость верстки экранов ' + screenPrice + ' рублей/ долларов/гривен/юани');
-console.log( 'Стоимость разработки сайта ' + fullPrice + ' рублей/ долларов/гривен/юани');
-
-//Вывести в консоль Процент отката посреднику за работу (fullPrice * (rollback/100))
-console.log('Процент отката посреднику за работу: ' + fullPrice * (rollback/100))
-
-// Написать конструкцию условий (расчеты приведены в рублях) (вывести в консоль)
-//   - Если fullPrice больше 30000, то “Даем скидку в 10%” 
-//   - Если fullPrice больше 15000 и меньше 30000, то сообщение “Даем скидку в 5%” 
-//   - Если fullPrice меньше 15000 и больше 0 то в консоль вывести сообщение “Скидка не предусмотрена” 
-//   - Если отрицательное значение то вывести “Что то пошло не так” 
-//   - Учесть варианты 0, 15000 и 30000(к какому уровню не важно)
-switch (true) {
-    case fullPrice >= 30000:
-        console.log('Даем скидку в 10%');
-        break;
-    case fullPrice >= 15000 && fullPrice < 30000:
-        console.log('Даем скидку в 5%');
-        break;
-    case fullPrice >= 0 && fullPrice < 15000:
-        console.log('Скидка не предусмотрена');
-        break;
-    case fullPrice < 0:
-        console.log('Что то пошло не так');
-        break;
+const showTypeOf = function (variable) {
+    console.log(variable, typeof variable);
 }
+
+//1) Объявить функцию getAllServicePrices. 
+//Функция возвращает сумму всех дополнительных услуг. 
+//Результат сохраняем в переменную allServicePrices. Тип - function expression
+function getAllServicePrice() {
+    return servicePrice1 + servicePrice2;
+}
+
+// 2) Объявить функцию getFullPrice. 
+//Функция возвращает сумму стоимости верстки и 
+//стоимости дополнительных услуг (screenPrice + allServicePrices). 
+//Результат сохраняем в переменную fullPrice. Тип - function declaration
+const getFullPrice = function () {
+    return screenPrice + allServicePrices;
+}
+
+// 3) Объявить функцию getTitle. 
+//Функция возвращает title меняя его таким образом: 
+//первый символ с большой буквы, остальные с маленькой". 
+//Учесть вариант что строка может начинаться с пустых символов. " КаЛьКулятор Верстки"
+const getTitle = function (title) {
+    let firstCharBig;
+
+    do {
+        title = title.replace(" ", "");
+    } while(title.indexOf(' ') === 0)  
+
+    title = title.toLowerCase();
+    //первая буква в строке переводится в большой регистр
+    firstCharBig = title[0].toUpperCase();
+    // методом replace изменяется первая строка title на firstCharBig
+    title = title.replace(title[0], firstCharBig);
+
+    return title;
+}
+
+// Объявить функцию getServicePercentPrices. 
+//Функция возвращает итоговую стоимость за вычетом процента отката. 
+//Результат сохраняем в переменную servicePercentPrice 
+//(итоговая стоимость минус сумма отката)
+const getServicePercentPrices = function () {
+    return Math.ceil(fullPrice - (fullPrice * (rollback/100)));
+}
+
+const getRollbackMesssage = function (price) {
+    switch (true) {
+        case price >= 30000:
+            return 'Даем скидку в 10%';
+            break;
+        case price >= 15000 && price < 30000:
+            return 'Даем скидку в 5%';
+            break;
+        case price >= 0 && price < 15000:
+            return 'Скидка не предусмотрена';
+            break;
+        case price < 0:
+            return 'Что то пошло не так';
+            break;
+    }
+}
+
+
+//------------блок функционала, или функциональный блок-------------------
+//получаем сумму всех дополнительных услуг
+allServicePrices = getAllServicePrice();
+//получаем полную стоимость без вычита отката
+fullPrice = getFullPrice();
+//итоговая стоимость минус сумма отката
+servicePercentPrice = getServicePercentPrices();
+
+//-------------------------блок вывода в консоль, мусорный блок-----------------------------
+//наименование проекта title уже получаем после обработки
+showTypeOf(getTitle(title));
+showTypeOf(fullPrice);
+showTypeOf(adaptive);
+
+console.log(screens);
+
+console.log(getRollbackMesssage(fullPrice));
+console.log('стоимость за вычетом процента отката посреднику ' + servicePercentPrice + ' рублей/ долларов/гривен/юани');
