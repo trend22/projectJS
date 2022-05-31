@@ -46,7 +46,7 @@ const getTitle = function (title) {
     let firstCharBig;
 
     do {
-        title = title.replace(" ", "");
+        title = title.trim();
     } while(title.indexOf(' ') === 0)  
 
     title = title.toLowerCase();
