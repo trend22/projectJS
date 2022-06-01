@@ -1,48 +1,74 @@
 'use strict'
 //---------------------блок объявления переменных------------------------------
-let title = prompt('Как называется Ваш проект?');
-let screens = prompt('Какие типы экранов нужно разработать?');
-let screenPrice = +prompt('Сколько будет стоить данная работа?');
-let adaptive = confirm('Нужен ли адаптив на сайте?');
-let service1 = prompt('Какой дополнительный тип услуги №1 нужен?');
-let servicePrice1 = +prompt('Сколько это будет стоить?');
-let service2 = prompt('Какой дополнительный тип услуги №2 нужен?');
-let servicePrice2 = +prompt('Сколько это будет стоить?');
+let title;
+let screens;
+let screenPrice;
+let adaptive;
+let service1;
+let service2;
 
 //объявляем переменную для суммы всех дополнительных услуг
-let allServicePrices = 0;
-
-let fullPrice = 0;
-let servicePercentPrice = 0;
+let allServicePrices;   
+let fullPrice;
+let servicePercentPrice;
 
 const rollback = 20;
 
+
+
 //---------------------------блок описания функций----------------------
+
+//функция проверки на number
+const isNumber = function (num) {
+    return !isNaN(parseFloat(num)) && isFinite(num);
+}
+
+const asking = function () {
+    title = prompt('Как называется Ваш проект?', 'Калькулятор сайта');
+    screens = prompt('Какие типы экранов нужно разработать?', 'Простые, сложные');
+
+    
+    do {
+        screenPrice = prompt('Сколько будет стоить данная работа?');
+     } while(!isNumber(screenPrice))
+    screenPrice = Number(screenPrice);
+
+    adaptive = confirm('Нужен ли адаптив на сайте?');
+}
 
 const showTypeOf = function (variable) {
     console.log(variable, typeof variable);
 }
 
-//1) Объявить функцию getAllServicePrices. 
-//Функция возвращает сумму всех дополнительных услуг. 
-//Результат сохраняем в переменную allServicePrices. Тип - function expression
-function getAllServicePrice() {
-    return servicePrice1 + servicePrice2;
+const getAllServicePrice = function () {
+   let sum = 0;
+   let aswerPrice = 0;
+
+   for(let i = 0; i < 2; i++) {
+    
+    if(i === 0) {
+        service1 = prompt('Какой дополнительный тип услуги №1 нужен?', 'простой');
+    } else if (i === 1) {
+        service2 = prompt('Какой дополнительный тип услуги №2 нужен?', 'сложный');
+    }
+    
+    
+    do {
+        aswerPrice = prompt('Сколько это будет стоить?');
+    } while(!isNumber(aswerPrice))
+    aswerPrice = Number(aswerPrice);
+    sum += aswerPrice;
+        
+   }
+
+     return sum;
 }
 
-// 2) Объявить функцию getFullPrice. 
-//Функция возвращает сумму стоимости верстки и 
-//стоимости дополнительных услуг (screenPrice + allServicePrices). 
-//Результат сохраняем в переменную fullPrice. Тип - function declaration
 const getFullPrice = function () {
     return screenPrice + allServicePrices;
 }
 
-// 3) Объявить функцию getTitle. 
-//Функция возвращает title меняя его таким образом: 
-//первый символ с большой буквы, остальные с маленькой". 
-//Учесть вариант что строка может начинаться с пустых символов. " КаЛьКулятор Верстки"
-const getTitle = function (title) {
+const getTitle = function () {
     let firstCharBig;
 
     do {
@@ -58,10 +84,6 @@ const getTitle = function (title) {
     return title;
 }
 
-// Объявить функцию getServicePercentPrices. 
-//Функция возвращает итоговую стоимость за вычетом процента отката. 
-//Результат сохраняем в переменную servicePercentPrice 
-//(итоговая стоимость минус сумма отката)
 const getServicePercentPrices = function () {
     return Math.ceil(fullPrice - (fullPrice * (rollback/100)));
 }
@@ -85,20 +107,28 @@ const getRollbackMesssage = function (price) {
 
 
 //------------блок функционала, или функциональный блок-------------------
+asking();
 //получаем сумму всех дополнительных услуг
 allServicePrices = getAllServicePrice();
 //получаем полную стоимость без вычита отката
 fullPrice = getFullPrice();
 //итоговая стоимость минус сумма отката
 servicePercentPrice = getServicePercentPrices();
+//получение нового title
+title = getTitle();
+
+
 
 //-------------------------блок вывода в консоль, мусорный блок-----------------------------
-//наименование проекта title уже получаем после обработки
-showTypeOf(getTitle(title));
+showTypeOf(title);
+showTypeOf(screenPrice);
+showTypeOf(allServicePrices);
 showTypeOf(fullPrice);
 showTypeOf(adaptive);
 
 console.log(screens);
-
+console.log('allServicePrices', allServicePrices);
+console.log('screenPrice', screenPrice);
+console.log('fullPrice', fullPrice);
 console.log(getRollbackMesssage(fullPrice));
 console.log('стоимость за вычетом процента отката посреднику ' + servicePercentPrice + ' рублей/ долларов/гривен/юани');
