@@ -24,9 +24,13 @@ const isNumber = function (num) {
 }
 
 const asking = function () {
+    
     title = prompt('Как называется Ваш проект?', 'Калькулятор сайта');
-    screens = prompt('Какие типы экранов нужно разработать?', 'Простые, сложные');
+    while(title === '' || title === null){ 
+        title = prompt('Как называется Ваш проект?', 'Калькулятор сайта');
+    }
 
+    screens = prompt('Какие типы экранов нужно разработать?', 'Простые, сложные');
     
     do {
         screenPrice = prompt('Сколько будет стоить данная работа?');
@@ -42,7 +46,7 @@ const showTypeOf = function (variable) {
 
 const getAllServicePrice = function () {
    let sum = 0;
-   let aswerPrice = 0;
+   let answerPrice = 0;
 
    for(let i = 0; i < 2; i++) {
     
@@ -54,10 +58,10 @@ const getAllServicePrice = function () {
     
     
     do {
-        aswerPrice = prompt('Сколько это будет стоить?');
-    } while(!isNumber(aswerPrice))
-    aswerPrice = Number(aswerPrice);
-    sum += aswerPrice;
+        answerPrice = prompt('Сколько это будет стоить?');
+    } while(!isNumber(answerPrice))
+    answerPrice = Number(answerPrice);
+    sum += answerPrice;
         
    }
 
@@ -88,7 +92,7 @@ const getServicePercentPrices = function () {
     return Math.ceil(fullPrice - (fullPrice * (rollback/100)));
 }
 
-const getRollbackMesssage = function (price) {
+const getRollBackMesssage = function (price) {
     switch (true) {
         case price >= 30000:
             return 'Даем скидку в 10%';
@@ -130,5 +134,5 @@ console.log(screens);
 console.log('allServicePrices', allServicePrices);
 console.log('screenPrice', screenPrice);
 console.log('fullPrice', fullPrice);
-console.log(getRollbackMesssage(fullPrice));
+console.log(getRollBackMesssage(fullPrice));
 console.log('стоимость за вычетом процента отката посреднику ' + servicePercentPrice + ' рублей/ долларов/гривен/юани');
