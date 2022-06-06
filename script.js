@@ -1,7 +1,7 @@
 'use strict'
 //---------------------блок объявления переменных------------------------------
 const appData = {
-
+    //блок определения свойств объекта
     title: '',
     screens: [],
     screenPrice: 0,
@@ -15,7 +15,7 @@ const appData = {
     //метод запуска приложения
     start: function () {
         appData.asking();
-        //читаем стоимости
+        //считаем стоимости
         appData.getPrices();
         //получаем полную стоимость без вычита отката
         appData.getFullPrice();
@@ -27,9 +27,9 @@ const appData = {
         appData.logger();
     },
 
-    //метод запроса первонаальных данных
+    //метод запроса первоначальных данных
     asking: function () {
-
+        //запрос наименования проекта и его проверка на string
         do {
             appData.title = prompt('Как называется Ваш проект?');
         } while(!appData.isString(appData.title));
@@ -38,16 +38,16 @@ const appData = {
         for (let i = 0; i < 2; i++) {
             let name;
             let answerPrice = 0;
-
+            //запрос наименований экранов и их проверка на string
             do {
             name = prompt('Какие типы экранов нужно разработать?');
             } while(!appData.isString(name));
-            
+            //запрос на стоимость разработок экранов и проверка на number
             do {
                 answerPrice = prompt('Сколько будет стоить данная работа?');
             } while (!appData.isNumber(answerPrice))
             answerPrice = Number(answerPrice);
-
+            //наполнение массива данных об экранах
             this.screens.push({id: 1, name: name, price: answerPrice});
         }
 
@@ -55,18 +55,19 @@ const appData = {
         for (let i = 0; i < 2; i++) {
             let answerPrice = 0;
             let name;
-
+            //запрос наименования доуслуги и его проверка на string
             do {
                 name = prompt('Какой дополнительный тип услуги №1 нужен?');
             } while(!appData.isString(name));
-
+            //запрос на стоимость допуслуг и проверка на number
             do {
                 answerPrice = prompt('Сколько это будет стоить?');
             }
             while (!appData.isNumber(answerPrice))
             answerPrice = Number(answerPrice);
-
-            appData.services[name] = answerPrice;
+            //наполнение объекта данными о допуслугах
+             appData.services[name + i] = answerPrice;
+            
         }
 
         appData.adaptive = confirm('Нужен ли адаптив на сайте?');
@@ -74,22 +75,25 @@ const appData = {
 
     //getPrices - метод отвечающий за расчёты цен
     getPrices: function () {
-        for( let screen of appData.screens) {
-            appData.screenPrice += screen.price; 
-        }
+        // for( let screen of appData.screens) {
+        //     appData.screenPrice += screen.price; 
+        // }
+
+        appData.screenPrice = appData.screens.reduce(function (sum, item) {
+            return sum + item.price;
+        }, 0)
          
         for(let key in appData.services) {
             appData.allServicePrices += appData.services[key];
         }
     },
 
-    //метод проверки на число
+    //метод проверки на number
     isNumber: function (num) {
         return !isNaN(parseFloat(num)) && isFinite(num);
     },
 
-
-
+    //метод проверки на string
     isString: function(str) {
         return (typeof str === 'string' && isNaN(Number(str)))
     },
@@ -143,6 +147,7 @@ const appData = {
     logger: function () {
         console.log(appData.fullPrice);
         console.log(appData.servicePercentPrice);
+        console.log(appData.services);
         }
 }
 
