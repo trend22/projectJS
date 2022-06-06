@@ -131,12 +131,7 @@ const appData = {
             console.log('Свойство/метод: ' + key + ' равен ' + appData[key]);
         }
 
-        // console.log(appData.screens);
-        // console.log('allServicePrices', appData.allServicePrices);
-        // console.log('screenPrice', appData.screenPrice);
-        // console.log('fullPrice', appData.fullPrice);
-        // console.log(appData.getRollBackMesssage(appData.fullPrice));
-        // console.log('стоимость за вычетом процента отката посреднику ' + appData.servicePercentPrice + ' рублей/ долларов/гривен/юани');
+
     }
 }
 
