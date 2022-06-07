@@ -1,4 +1,58 @@
 'use strict'
+
+//lesson09. получение данных с DOM элемента
+//Получить заголовок "Калькулятор верстки" через метод getElementsByTagName.
+// (тэг h1, получить именно элемент, а не коллекцию)
+let title = document.getElementsByTagName('h1');
+//Получить кнопки "Рассчитать" и "Сброс" через метод getElementsByClassName. (класс handler_btn)
+let buttonsCalcReset = document.getElementsByClassName('handler_btn');
+//Получить кнопку "+" под выпадающим списком через метод querySelector. (класс screen-btn)
+let buttonsPlus = document.querySelector('.screen-btn');
+//Получить все элементы с классом other-items в две разные переменные. 
+//В первую элементы у которых так же присутствует класс percent, 
+//во вторую элементы у которых так же присутствует класс number через метод querySelectorAll.
+let otherItemsPercent = document.querySelectorAll('.other-items.percent');
+let otherItemsNumber = document.querySelectorAll('.other-items.number');
+//Получить input type=range через его родителя с классом rollback 
+//одним запросом через метод querySelector.
+let inputTypeRange = document.querySelector('.rollback').querySelector('input');
+//Получить span с классом range-value через его родителя 
+//с классом rollback одним запросом через метод querySelector.
+let spanRangeValueAndRollback =document.querySelector('.rollback').querySelector('span');
+//Получить все инпуты с классом total-input справа через метод getElementsByClassName.
+// (класс total-input, получить именно элементы, а не коллекции)
+let inputTotalInput = document.getElementsByClassName('total-input'); 
+//Получить все блоки с классом screen в изменяемую переменную ( let ) 
+//через метод querySelectorAll (далее мы будем переопределять ее значение)
+let elementsScreen = document.querySelectorAll('.screen');
+
+//вывод в консоль всех полученных данных
+console.log(title[0]);
+
+for(let i = 0; i < buttonsCalcReset.length; i++) {
+    console.log(buttonsCalcReset[i]);
+}
+
+console.log(buttonsPlus);
+
+otherItemsPercent.forEach(function (item) {
+    console.log(item);
+})
+
+otherItemsNumber.forEach(function (item) {
+    console.log(item);
+})
+
+console.log(inputTypeRange);
+console.log(spanRangeValueAndRollback);
+
+for(let i = 0; i < inputTotalInput.length; i++) {
+    console.log(inputTotalInput[i]);
+}
+
+elementsScreen.forEach(function (item) {
+    console.log(item);
+})
 //---------------------блок объявления переменных------------------------------
 const appData = {
     //блок определения свойств объекта
@@ -117,8 +171,6 @@ const appData = {
         firstCharBig = appData.title[0].toUpperCase();
         // методом replace изменяется первая строка title на firstCharBig
         appData.title = appData.title.replace(appData.title[0], firstCharBig);
-
-        appData.title =  appData.title;
     },
 
     //метод получения конечной стоимости проекта за вычетом отката
@@ -147,7 +199,6 @@ const appData = {
     logger: function () {
         console.log(appData.fullPrice);
         console.log(appData.servicePercentPrice);
-        console.log(appData.services);
         }
 }
 
