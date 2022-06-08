@@ -15,10 +15,10 @@ let otherItemsPercent = document.querySelectorAll('.other-items.percent');
 let otherItemsNumber = document.querySelectorAll('.other-items.number');
 //Получить input type=range через его родителя с классом rollback 
 //одним запросом через метод querySelector.
-let inputTypeRange = document.querySelector('.rollback').querySelector('input');
+let inputTypeRange = document.querySelector('.rollback input');
 //Получить span с классом range-value через его родителя 
 //с классом rollback одним запросом через метод querySelector.
-let spanRangeValueAndRollback =document.querySelector('.rollback').querySelector('span');
+let spanRangeValueAndRollback =document.querySelector('.rollback span');
 //Получить все инпуты с классом total-input справа через метод getElementsByClassName.
 // (класс total-input, получить именно элементы, а не коллекции)
 let inputTotalInput = document.getElementsByClassName('total-input'); 
