@@ -28,8 +28,16 @@ const inputWithRollback = document.getElementsByClassName('total-input')[4]
 //Получить все блоки с классом screen в изменяемую переменную ( let )
 //через метод querySelectorAll (далее мы будем переопределять ее значение)
 let screens = document.querySelectorAll('.screen')
+let adaptives = document.querySelectorAll('.other-items')
+let cms = document.querySelector('.cms input[type=checkbox]')
 //выбор списка, чтобы разблокирвоать кнопку Рассчитать
 const options = document.querySelectorAll('option')
+//выбор флажка cms
+let cmsVariants = document.querySelector('.hidden-cms-variants')
+//выбор option 'другое' в cms hidden variants
+const optionCmsOther = document.querySelector('.hidden-cms-variants select')
+//выбор скрытого  Input для получения value из Option Другое 
+let inputHiddenCMSOther = document.querySelector('.hidden-cms-variants .main-controls__input')
 //---------------------блок объявления переменных------------------------------
 const appData = {
   //блок определения свойств объекта
@@ -45,14 +53,20 @@ const appData = {
   servicesNumber: {},
   serviceWithRollback: 0,
   rollback: 0,
+  cmsPercent: 0,
+  isErrorInputDataScreen: false,
 
   //запуск приложения
   init: function () {
-    appData.addTitle()
-    startButton.addEventListener('click', appData.start)
-    buttonsPlus.addEventListener('click', appData.addScreenBlock)
+    this.addTitle()
+    startButton.addEventListener('click', this.start)
+    buttonsPlus.addEventListener('click', this.addScreenBlock)
     //запуск функций для управления input[type=range]
-    inputRange.addEventListener('input', appData.getRollback)
+    inputRange.addEventListener('input', this.getRollback)
+    resetButton.addEventListener('click', this.reset)
+    cms.addEventListener('click', this.addCmsVariants)
+    //добавление блока options cms other
+    optionCmsOther.addEventListener('click', this.addCmsInput)
   },
   //получение title
   addTitle: function () {
@@ -61,31 +75,58 @@ const appData = {
   //метод запуска приложения
   start: function () {
     appData.isDataScreenEnter()
-    if (!startButton.disabled) {
+    if (!appData.isErrorInputDataScreen) {
       appData.addScreens()
       appData.addServices()
+      appData.addCmsPercent()
       appData.getPrices()
       appData.showResult()
+      appData.fixInfo()
     }
-    appData.setBtnEnabled()
+    appData.isErrorInputDataScreen = false
     // appData.logger();
+  },
+  // метод сбрасывающий зафиксированную информацию кпонкой Сброс
+  reset: function () {
+    appData.resetScreens()
+    appData.resetAdaptive()
+    appData.resetShowResult()
+    appData.resetCms()
+    //смена кнопки Сброс на Рассчитать
+    resetButton.style.display = 'none'
+    startButton.style.display = ''
   },
   //метод для считывания типов экранов и их количества и записи в свойство screens объекта appData
   addScreens: function () {
     //переопределение массива screen
     screens = document.querySelectorAll('.screen')
-    screens.forEach(function (screen, id) {
+    screens.forEach((screen, id) => {
       const select = screen.querySelector('select')
       const input = screen.querySelector('input')
       const selectName = select.options[select.selectedIndex].innerText
 
-      appData.screens.push({
+      this.screens.push({
         id: id,
         name: selectName,
         price: +select.value * +input.value,
         count: +input.value,
       })
     })
+  },
+  //метод добавляющий процент cms в объект
+  addCmsPercent: function () {
+    switch (true) {
+      case optionCmsOther.selectedIndex === 1:
+        this.cmsPercent = 50;
+        break;
+      case optionCmsOther.selectedIndex === 2:
+        let optionCmsOtherInput = document.querySelector('#cms-other-input')
+        this.cmsPercent = Number(optionCmsOtherInput.value);
+        break;
+      default:
+        this.cmsPercent = 0;
+        break;
+    }
   },
   //метод для создания нового блока для считывания информации о screen
   addScreenBlock: function () {
@@ -95,75 +136,77 @@ const appData = {
   },
   //метод для определения дополнительных сервисов в процентах
   addServices: function () {
-    otherItemsPercent.forEach(function (item) {
+    otherItemsPercent.forEach((item) => {
       const check = item.querySelector('input[type=checkbox]')
       const label = item.querySelector('label')
       const input = item.querySelector('input[type=text]')
       //проверка на то,что флажок checkbox выбран
       if (check.checked) {
-        appData.servicesPercent[label.textContent] = +input.value
+        this.servicesPercent[label.textContent] = +input.value
       }
     })
 
-    otherItemsNumber.forEach(function (item) {
+    otherItemsNumber.forEach((item) => {
       const check = item.querySelector('input[type=checkbox]')
       const label = item.querySelector('label')
       const input = item.querySelector('input[type=text]')
       //проверка на то,что флажок checkbox выбран
       if (check.checked) {
-        appData.servicesNumber[label.textContent] = +input.value
+        this.servicesNumber[label.textContent] = +input.value
       }
     })
   },
-
+  //метод для получения всех рассчётов  
   getPrices: function () {
-    appData.screenPrice = appData.screens.reduce(function (sum, item) {
+    this.screenPrice = this.screens.reduce((sum, item) => {
       return sum + item.price
     }, 0)
 
-    for (let key in appData.servicesNumber) {
-      appData.servicePriceNumber += appData.servicesNumber[key]
+    for (let key in this.servicesNumber) {
+      this.servicePriceNumber += this.servicesNumber[key]
     }
 
-    for (let key in appData.servicesPercent) {
-      appData.servicePricePercent += appData.screenPrice * (appData.servicesPercent[key] / 100)
+    for (let key in this.servicesPercent) {
+      this.servicePricePercent +=
+        this.screenPrice * (this.servicesPercent[key] / 100)
     }
 
-    appData.fullPrice = appData.screenPrice + appData.servicePriceNumber + appData.servicePricePercent
+    this.fullPrice =
+      this.screenPrice + this.servicePriceNumber + this.servicePricePercent
+    //добавление к рассчёту опции cms
+    this.fullPrice = this.fullPrice + (this.fullPrice * this.cmsPercent / 100)
 
-    appData.getServiceWithRollback();
+    this.getServiceWithRollback()
 
     //подсчёт общего количества экранов
-    appData.screenCounts = appData.screens.reduce(function (sum, item) {
+    this.screenCounts = this.screens.reduce((sum, item) => {
       return sum + item.count
     }, 0)
   },
 
   showResult: function () {
-    inputTotal.value = appData.screenPrice
-    inputService.value = appData.servicePricePercent + appData.servicePriceNumber
-    inputFullPrice.value = appData.fullPrice
-    inputWithRollback.value = appData.serviceWithRollback
-    inputCountScreens.value = appData.screenCounts
-
+    inputTotal.value = this.screenPrice
+    inputService.value = this.servicePricePercent + this.servicePriceNumber
+    inputFullPrice.value = this.fullPrice
+    inputWithRollback.value = this.serviceWithRollback
+    inputCountScreens.value = this.screenCounts
   },
   //установка свойства disabled в true кнопки Рассчитать
   isDataScreenEnter: function () {
     screens = document.querySelectorAll('.screen')
-    screens.forEach(function (screen) {
+    screens.forEach((screen) => {
       const select = screen.querySelector('select')
       const input = screen.querySelector('input')
       const selectName = select.options[select.selectedIndex].innerText
 
-      if (selectName === '' || +input.value === 0 || selectName === 'Тип экранов') {
-        startButton.disabled = true
+      if (
+        selectName.trim() === '' ||
+        +input.value === 0 ||
+        selectName === 'Тип экранов'
+      ) {
+        this.isErrorInputDataScreen = true
       }
     })
-
-  },
-  //отмена свойства disabled в false кнопки Рассчитать
-  setBtnEnabled: function () {
-    startButton.disabled = false
   },
 
   //метод нахождения rollback
@@ -171,19 +214,145 @@ const appData = {
     inputRangeValue.value = event.target.value
     inputRangeValue.textContent = event.target.value + '%'
     appData.rollback = inputRangeValue.value
-    appData.getServiceWithRollback();
+    appData.getServiceWithRollback()
   },
 
   getServiceWithRollback: function () {
-    appData.serviceWithRollback = Math.ceil(
-      appData.fullPrice - appData.fullPrice * (appData.rollback / 100))
-    appData.showResult()
+    this.serviceWithRollback = Math.ceil(
+      this.fullPrice - this.fullPrice * (this.rollback / 100)
+    )
+    this.showResult()
   },
 
-}
+  //метод для блокировки вводных inputs и selects
+  fixInfo: function () {
+    screens = document.querySelectorAll('.screen')
+    screens.forEach((screen) => {
+      let select = screen.querySelector('select')
+      let input = screen.querySelector('input')
+      select.disabled = true
+      input.disabled = true
+    })
+    //здесь блокируются галочки label
+    adaptives = document.querySelectorAll('.other-items')
+    adaptives.forEach((adaptive) => {
+      let input = adaptive.querySelector('input')
+      input.disabled = true
+    })
+    //смена кнопки Рассчитать на Сброс
+    startButton.style.display = 'none'
+    resetButton.style.display = ''
+    //блокировка кнопки добавлений Screens
+    buttonsPlus.disabled = true
+  },
 
+  //метод удаляющий screens
+  resetScreens: function () {
+    screens = document.querySelectorAll('.screen')
+    screens.forEach((screen, index) => {
+      if (index !== 0) {
+        screen.remove()
+      } else {
+        let select = screen.querySelector('select')
+        let input = screen.querySelector('input')
+        select.disabled = false
+        input.disabled = false
+        select.innerHTML =
+          '<select name="views-select">' +
+          '<option value="" selected>Тип экранов</option>' +
+          '<option value="500">Простых 500руб * n</option>' +
+          '<option value="700">Сложных 700руб * n</option>' +
+          '<option value="800">Интерактивных 800руб * n</option>' +
+          '<option value="100">Форм 100руб * n</option>' +
+          '<option value="300">Слайдеров 300руб * n</option>' +
+          '<option value="200">Модальные окна 200руб * n</option>' +
+          '<option value="100">Анимация в блоках 100руб * n</option>' +
+          '</select>'
+        input.value = ''
+        input.innerHTML =
+          '<input type="text" placeholder="Количество экранов">' + '</input>'
+      }
+      buttonsPlus.disabled = false
+    })
+
+    this.screens.splice(0, this.screens.length)
+  },
+  //обнуляем checkboxs адаптива
+  resetAdaptive: function () {
+    adaptives = document.querySelectorAll('.other-items')
+    adaptives.forEach((adaptive) => {
+      let input = adaptive.querySelector('input')
+      let check = adaptive.querySelector('input[type=checkbox]')
+      input.disabled = false
+      check.checked = false
+    })
+  },
+  //обнуляем все свойства объекта appData, а также прежние результаты расчёта
+  resetShowResult: function () {
+    //обнуляем результаты
+    inputTotal.value = 0
+    inputService.value = 0
+    inputFullPrice.value = 0
+    inputWithRollback.value = 0
+    inputCountScreens.value = 0
+    //обнуляем свойства объекта
+    this.screenPrice = 0
+    this.screenCounts = 0
+    this.adaptive = true
+    this.servicePricePercent = 0
+    this.servicePriceNumber = 0
+    this.fullPrice = 0
+    this.servicesPercent = {}
+    this.servicesNumber = {}
+    this.serviceWithRollback = 0
+    this.cmsPercent = 0
+    this.isErrorInputDataScreen = false
+    //обнулим и откат вместе с полосой input range
+    this.rollback = 0
+    inputRange.value = 0
+    inputRangeValue.innerHTML = '<span class="range-value">' + '</span>'
+    inputRangeValue.textContent = '0%'
+  },
+
+  //метод добавления/удаления CMS вариантов на экран
+  addCmsVariants: function () {
+    if (cms.checked) {
+      cmsVariants.style.display = 'flex'
+    } else {
+      cmsVariants.style.display = 'none'
+    }
+  },
+  //метод раскрывает скрытое поле input для введения процента стоимости cms
+  addCmsInput: function () {
+    switch (true) {
+      case optionCmsOther.selectedIndex === 0:
+        inputHiddenCMSOther.style.display = 'none'
+        break;
+      case optionCmsOther.selectedIndex === 1:
+        inputHiddenCMSOther.style.display = 'none'
+        break;
+      case optionCmsOther.selectedIndex === 2:
+        inputHiddenCMSOther.style.display = 'flex'
+        break;
+    }
+  },
+  //метод сбрасывающий настройки cms
+  resetCms: function () {
+    let optionCmsOtherInput = document.querySelector('#cms-other-input')
+    optionCmsOther.innerHTML = '<select name="views-select" id="cms-select">' +
+      '<option value="" selected>Тип CMS</option>' +
+      '<option value="50">WordPress</option>' +
+      '<option value="other">Другое</option>' +
+      '</select>'
+    optionCmsOtherInput.value = ''
+    cms.checked = false
+    inputHiddenCMSOther.style.display = 'none'
+    cmsVariants.style.display = 'none'
+  },
+}
 //------------запуск приложения-------------------
 appData.init()
+
 //--------------------------------------------------------------------------------------------
 //----------------- возможно понадобится -----------
 //метод для определения дополнительных сервисов в числах
@@ -253,8 +422,6 @@ appData.init()
 //   return typeof str === 'string' && isNaN(Number(str))
 // },
 
-
-
 //   //метод получения отредактированного названия проекта
 //   getTitle: function () {
 //     let firstCharBig
@@ -269,8 +436,6 @@ appData.init()
 //     // методом replace изменяется первая строка title на firstCharBig
 //     appData.title = appData.title.replace(appData.title[0], firstCharBig)
 //   },
-
-
 
 //метод вычисления скидки
 // getRollBackMesssage: function (price) {
