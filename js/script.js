@@ -59,11 +59,11 @@ const appData = {
   //запуск приложения
   init: function () {
     this.addTitle()
-    startButton.addEventListener('click', this.start)
+    startButton.addEventListener('click', this.start.bind(appData))
     buttonsPlus.addEventListener('click', this.addScreenBlock)
     //запуск функций для управления input[type=range]
     inputRange.addEventListener('input', this.getRollback)
-    resetButton.addEventListener('click', this.reset)
+    resetButton.addEventListener('click', this.reset.bind(appData))
     cms.addEventListener('click', this.addCmsVariants)
     //добавление блока options cms other
     optionCmsOther.addEventListener('click', this.addCmsInput)
@@ -74,24 +74,24 @@ const appData = {
   },
   //метод запуска приложения
   start: function () {
-    appData.isDataScreenEnter()
-    if (!appData.isErrorInputDataScreen) {
-      appData.addScreens()
-      appData.addServices()
-      appData.addCmsPercent()
-      appData.getPrices()
-      appData.showResult()
-      appData.fixInfo()
+    this.isDataScreenEnter()
+    if (!this.isErrorInputDataScreen) {
+      this.addScreens()
+      this.addServices()
+      this.addCmsPercent()
+      this.getPrices()
+      this.showResult()
+      this.fixInfo()
     }
-    appData.isErrorInputDataScreen = false
+    this.isErrorInputDataScreen = false
     // appData.logger();
   },
   // метод сбрасывающий зафиксированную информацию кпонкой Сброс
   reset: function () {
-    appData.resetScreens()
-    appData.resetAdaptive()
-    appData.resetShowResult()
-    appData.resetCms()
+    this.resetScreens()
+    this.resetAdaptive()
+    this.resetShowResult()
+    this.resetCms()
     //смена кнопки Сброс на Рассчитать
     resetButton.style.display = 'none'
     startButton.style.display = ''
